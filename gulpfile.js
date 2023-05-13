@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const {parallel} = require('gulp')
+const {series, parallel} = require('gulp')
 const min = require('gulp-cssmin');
 const concat = require('gulp-concat');
 const rename = require('gulp-rename');
@@ -70,17 +70,20 @@ function tarefashtml(cb){
                 .pipe(htmlmin({collapseWhitespace: true}))
                 .pipe(gulp.dest('./dist'))
     
-    
 };
+function end(saida){
+    console.log('tarefas terminadas')
+    return saida()
+}
 
-gulp.task('serve', function(){
+gulp.task("serve", function(){
 
     sync.init({
         server: {
             baseDir: './dist'
         }
     })
-    gulp.watch('./dist/**/*').on('change', reload)
+    gulp.watch('./assets/**/*').on('change', reload)
     gulp.watch('./assets/**/*').on('change', process)
 })
 
@@ -89,5 +92,5 @@ exports.estilo = tarefascss
 exports.script = tarefasjs
 exports.images = tarefasimage
 exports.html = tarefashtml
-const process = parallel(tarefascss, tarefashtml, tarefasjs, tarefasimage)
+const process = series(tarefascss, tarefashtml, tarefasjs, tarefasimage, end)
 exports.default = process
