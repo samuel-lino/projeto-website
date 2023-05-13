@@ -8,6 +8,8 @@ const image = require('gulp-image');
 const stripcoment = require('gulp-strip-comments');
 const stripcsscoment = require('gulp-strip-css-comments');
 const htmlmin = require('gulp-htmlmin');
+const sync = require('browser-sync').create()
+const reload = sync.reload
 
 function tarefascss(cb){
 
@@ -71,14 +73,21 @@ function tarefashtml(cb){
     
 };
 
+gulp.task('serve', function(){
+
+    sync.init({
+        server: {
+            baseDir: './dist'
+        }
+    })
+    gulp.watch('./dist/**/*').on('change', reload)
+    gulp.watch('./assets/**/*').on('change', process)
+})
 
 
 exports.estilo = tarefascss
 exports.script = tarefasjs
 exports.images = tarefasimage
 exports.html = tarefashtml
-exports.default = parallel(tarefascss, tarefashtml, tarefasjs, tarefasimage)
-
-gulp.task('exectarefas', () => {
-    
-})
+const process = parallel(tarefascss, tarefashtml, tarefasjs, tarefasimage)
+exports.default = process
